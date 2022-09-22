@@ -42,6 +42,22 @@ namespace DapperCrudTutorial.Controllers
             return Ok(await SelectAllHeroes(connection));
         }
 
+        [HttpPut]
+        public async Task<ActionResult<List<SuperHero>>> UpdateHero(SuperHero hero)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await connection.ExecuteAsync("update \"superheroes\" set " +
+                "name = @Name, firstname = @FirstName, lastname = @LastName, place = @Place where \"id\" = @Id", hero);
+            return Ok(await SelectAllHeroes(connection));
+        }
+
+        [HttpDelete("{heroId}")]
+        public async Task<ActionResult<List<SuperHero>>> DeleteHero(int heroId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await connection.ExecuteAsync("delete from \"superheroes\" where \"id\" = @Id", new { Id = heroId });
+            return Ok(await SelectAllHeroes(connection));
+        }
 
         private static async Task<IEnumerable<SuperHero>> SelectAllHeroes(NpgsqlConnection connection)
         {
